@@ -1,7 +1,9 @@
 import {program} from "commander";
+
 import {WebSocketServer} from "ws";
-import type {BindMessage, CloseConnectionMessage, DataMessage, UnbindMessage} from "./types";
+
 import {bind_port, close_socket, send_data_to_socket, unbind_all_ports, unbind_port} from "./tcp";
+import type {BindMessage, CloseConnectionMessage, DataMessage, UnbindMessage} from "./types";
 
 program
     .name("porter")
@@ -16,7 +18,31 @@ if (host === "0.0.0.0" || host === "::") {
     console.warn("Warning: exposing ports to the public internet can be dangerous. Make sure you know what you're doing.");
 }
 
-const wss = new WebSocketServer({port: parseInt(port)});
+const ALLOWED_ORIGINS = [
+    "http://localhost",
+    "http://localhost:3000",
+    "http://localhost:3005",
+    "https://ollieg.codes"
+];
+
+const wss = new WebSocketServer({
+    port: parseInt(port),
+    verifyClient: (info, callback) => {
+        if (info.origin) {
+            if (!ALLOWED_ORIGINS.includes(info.origin)) {
+                console.warn(`Connection from disallowed origin: ${info.origin}`);
+                callback(false, 1008, "Origin not allowed");
+                return;
+            }
+
+            console.log(`Connection from origin: ${info.origin}`);
+            callback(true);
+        } else {
+            console.warn("Connection without origin header");
+            callback(false, 1008, "Origin header required");
+        }
+    }
+});
 
 wss.on("connection", (ws) => {
     console.log("New client connected");
