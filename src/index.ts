@@ -91,3 +91,5 @@ wss.on("connection", (ws) => {
 });
 
 console.log(`WebSocket server running on ws://127.0.0.1:${port}`);
+
+// TODO: add udp support
