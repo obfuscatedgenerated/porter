@@ -27,6 +27,7 @@ export interface ConnectMessage extends BaseMessage {
     type: "connect_req";
     host: string;
     port: number;
+    force_sock_id?: string;
 }
 
 export type InboundMessage = BindMessage | UnbindMessage | DataMessage | CloseConnectionMessage | ConnectMessage;

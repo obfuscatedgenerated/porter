@@ -168,8 +168,20 @@ export const close_socket = (sock_id: string, ws: WebSocket) => {
     });
 }
 
-export const connect_to_remote = (host: string, port: number, ws: WebSocket) => {
-    const sock_id = randomUUID();
+export const connect_to_remote = (host: string, port: number, ws: WebSocket, force_sock_id?: string) => {
+    if (force_sock_id) {
+        if (sockets.has(force_sock_id)) {
+            ws.send(JSON.stringify({
+                type: "ack_connect",
+                sock_id: force_sock_id,
+                success: false,
+                error: "sock_id already in use"
+            } as OutboundMessage));
+            return;
+        }
+    }
+
+    const sock_id = force_sock_id || randomUUID();
     const socket = new Socket();
 
     socket.connect(port, host, () => {

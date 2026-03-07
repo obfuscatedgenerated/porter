@@ -112,7 +112,7 @@ wss.on("connection", (ws) => {
                     const connect_msg = base_msg as ConnectMessage;
                     console.log(`Client requested to connect to ${connect_msg.host}:${connect_msg.port}`);
 
-                    connect_to_remote(connect_msg.host, connect_msg.port, ws);
+                    connect_to_remote(connect_msg.host, connect_msg.port, ws, connect_msg.force_sock_id);
                     break;
                 default:
                     console.warn(`Unknown message type: ${base_msg.type}`);
