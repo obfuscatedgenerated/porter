@@ -29,7 +29,7 @@ program
 
 program.parse();
 
-const {host, port, disable_bind, disable_connect, allowed_origins} = program.opts();
+const {host, port, disableBind: disable_bind, disableConnect: disable_connect, allowedOrigins: allowed_origins} = program.opts();
 
 if (host === "0.0.0.0" || host === "::") {
     console.warn("Warning: exposing ports to the public internet can be dangerous. Make sure you know what you're doing.");
