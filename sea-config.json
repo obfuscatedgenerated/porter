@@ -1,0 +1,4 @@
+{
+  "main": "dist/porter.js",
+  "output": "dist/porter.blob"
+}
