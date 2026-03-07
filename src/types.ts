@@ -23,7 +23,13 @@ export interface CloseConnectionMessage extends BaseMessage {
     sock_id: string;
 }
 
-export type InboundMessage = BindMessage | UnbindMessage | DataMessage | CloseConnectionMessage;
+export interface ConnectMessage extends BaseMessage {
+    type: "connect_req";
+    host: string;
+    port: number;
+}
+
+export type InboundMessage = BindMessage | UnbindMessage | DataMessage | CloseConnectionMessage | ConnectMessage;
 
 export interface IncomingConnectionMessage extends BaseMessage {
     type: "incoming_connection";
@@ -37,25 +43,29 @@ export interface ConnectionClosingMessage extends BaseMessage {
     sock_id: string;
 }
 
-export interface AckBindMessage extends BaseMessage {
+interface AckMessage extends BaseMessage {
+    success: boolean;
+    error?: string;
+}
+
+export interface AckBindMessage extends AckMessage {
     type: "ack_bind";
     port: number;
-    success: boolean;
-    error?: string;
 }
 
-export interface AckUnbindMessage extends BaseMessage {
+export interface AckUnbindMessage extends AckMessage {
     type: "ack_unbind";
     port: number;
-    success: boolean;
-    error?: string;
 }
 
-export interface AckCloseConnectionMessage extends BaseMessage {
+export interface AckCloseConnectionMessage extends AckMessage {
     type: "ack_close_connection";
     sock_id: string;
-    success: boolean;
-    error?: string;
 }
 
-export type OutboundMessage = IncomingConnectionMessage | ConnectionClosingMessage | AckBindMessage | AckUnbindMessage | DataMessage | AckCloseConnectionMessage;
+export interface AckConnectMessage extends AckMessage {
+    type: "ack_connect";
+    sock_id: string;
+}
+
+export type OutboundMessage = IncomingConnectionMessage | ConnectionClosingMessage | AckBindMessage | AckUnbindMessage | DataMessage | AckCloseConnectionMessage | AckConnectMessage;

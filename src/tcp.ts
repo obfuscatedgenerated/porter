@@ -167,3 +167,45 @@ export const close_socket = (sock_id: string, ws: WebSocket) => {
         } as OutboundMessage));
     });
 }
+
+export const connect_to_remote = (host: string, port: number, ws: WebSocket) => {
+    const sock_id = randomUUID();
+    const socket = new Socket();
+
+    socket.connect(port, host, () => {
+        sockets.set(sock_id, socket);
+        console.log(`Outbound connection to ${host}:${port} established as ${sock_id}`);
+
+        ws.send(JSON.stringify({
+            type: "ack_connect",
+            sock_id,
+            success: true
+        } as OutboundMessage));
+    });
+
+    socket.on("data", (data) => {
+        ws.send(JSON.stringify({
+            type: "data",
+            sock_id,
+            data: data.toString("base64")
+        } as OutboundMessage));
+    });
+
+    socket.on("error", (err) => {
+        console.error(`Outbound connection error for ${sock_id}:`, err);
+        ws.send(JSON.stringify({
+            type: "ack_connect",
+            sock_id,
+            success: false,
+            error: err.message
+        } as OutboundMessage));
+    });
+
+    socket.on("close", () => {
+        sockets.delete(sock_id);
+        ws.send(JSON.stringify({
+            type: "connection_closing",
+            sock_id
+        } as OutboundMessage));
+    });
+};
