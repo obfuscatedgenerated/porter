@@ -40,7 +40,7 @@ export interface IncomingConnectionMessage extends BaseMessage {
 
 export interface ConnectionClosingMessage extends BaseMessage {
     type: "connection_closing";
-    port: number;
+    port?: number;
     sock_id: string;
 }
 
